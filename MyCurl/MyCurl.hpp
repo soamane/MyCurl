@@ -5,6 +5,7 @@
 /*
    Internal libraries
 */
+#include <future>
 #include <string_view>
 #include <initializer_list>
 
@@ -47,10 +48,16 @@ public:
     const curl_slist* AddHeaders(const std::initializer_list<std::string>& headers) const;
 
     // Performs a GET request
-    const std::string PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const;
+    std::string PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const;
 
     // Performs a POST request
-    const std::string PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const;
+    std::string PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const;
+
+    // Performs a async GET request
+    std::future<std::string> PerformAsyncGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers);
+
+    // Performs a async POST request
+    std::future<std::string> PerformAsyncPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields);
 
     // Cleanup the CURL's object
     void Cleanup();

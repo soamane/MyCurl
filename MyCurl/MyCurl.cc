@@ -19,7 +19,7 @@ void MyCurl::UseYourCurl(CURL* curl) {
 }
 
 void MyCurl::UseProxyServer(std::string_view proxy) {
-    this->m_proxy = proxy; 
+    this->m_proxy = proxy;
     curl_easy_setopt(this->m_curl, CURLOPT_PROXY, m_proxy.c_str());
 }
 
@@ -44,7 +44,7 @@ const curl_slist* MyCurl::AddHeaders(const std::initializer_list<std::string>& h
     return headerList;
 }
 
-const std::string MyCurl::PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const {
+std::string MyCurl::PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const {
     if (!this->m_curl) {
         throw std::runtime_error("CURL handle is not initialized");
     }
@@ -73,7 +73,7 @@ const std::string MyCurl::PerformGetRequest(const ProtocolType& protocol, std::s
     return response;
 }
 
-const std::string MyCurl::PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const {
+std::string MyCurl::PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const {
     if (!this->m_curl) {
         throw std::runtime_error("CURL handle is not initialized");
     }
@@ -106,6 +106,16 @@ const std::string MyCurl::PerformPostRequest(const ProtocolType& protocol, std::
 
     curl_easy_cleanup(curl);
     return response;
+}
+
+std::future<std::string> MyCurl::PerformAsyncGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers)
+{
+    return std::async(std::launch::async, &MyCurl::PerformGetRequest, this, protocol, url, headers);
+}
+
+std::future<std::string> MyCurl::PerformAsyncPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields)
+{
+    return std::async(std::launch::async, &MyCurl::PerformPostRequest, this, protocol, url, headers, postfields);
 }
 
 void MyCurl::Cleanup() {
