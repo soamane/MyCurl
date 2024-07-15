@@ -27,8 +27,14 @@ public:
 
     // Destructor: cleans up libcurl resources
     ~MyCurl();
+    
+    // Use custom curl pointer for object
+    void UseYourCurl(CURL* curl);
 
-    // Sets a proxy server without authentication
+    /*
+        Sets a proxy server without authentication
+        Usage: "127.0.0.1:123"
+    */ 
     void UseProxyServer(std::string_view proxy);
 
     // Sets a proxy server with authentication
@@ -38,13 +44,19 @@ public:
     void DisableProxyServer();
 
     // Adds headers to the HTTP request
-    const curl_slist* AddHeaders(const std::initializer_list<std::string> headers) const;
+    const curl_slist* AddHeaders(const std::initializer_list<std::string>& headers) const;
 
     // Performs a GET request
     const std::string PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const;
 
     // Performs a POST request
     const std::string PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const;
+
+    // Cleanup the CURL's object
+    void Cleanup();
+
+    // Cleanup custom CURL's object
+    void CleanupObject(CURL* curl);
 
 private:
     // Callback function to handle data received in a HTTP response
