@@ -39,7 +39,7 @@ public:
     void DisableProxyServer();
 
     // Adds headers to the HTTP request
-    const curl_slist* AddHeaders(const std::initializer_list<std::string>& headers) const;
+    const curl_slist* AddHeaders(const std::vector<std::string>& headers) const;
 
     // Performs a GET request
     std::string PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const;

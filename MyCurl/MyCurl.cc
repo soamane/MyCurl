@@ -36,7 +36,7 @@ void MyCurl::DisableProxyServer() {
     curl_easy_setopt(this->m_curl, CURLOPT_PROXYPASSWORD, nullptr);
 }
 
-const curl_slist* MyCurl::AddHeaders(const std::initializer_list<std::string>& headers) const {
+const curl_slist* MyCurl::AddHeaders(const std::vector<std::string>& headers) const {
     curl_slist* headerList = nullptr;
     for (const auto& header : headers) {
         headerList = curl_slist_append(headerList, header.c_str());

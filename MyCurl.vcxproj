@@ -95,8 +95,8 @@
     <TargetName>$(ProjectName)_x64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>assets\curl\include;$(IncludePath)</IncludePath>
-    <LibraryPath>assets\curl\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\vcpkg\vcpkg-master\installed\x64-windows\include\</IncludePath>
+    <LibraryPath>C:\vcpkg\vcpkg-master\installed\x64-windows\lib</LibraryPath>
     <OutDir>bin\Release\x64\</OutDir>
     <TargetName>$(ProjectName)_x64</TargetName>
   </PropertyGroup>
