@@ -42,16 +42,10 @@ public:
     const curl_slist* AddHeaders(const std::vector<std::string>& headers) const;
 
     // Performs a GET request
-    std::string PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const;
+    std::pair<std::string, long> PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers)  const;
 
     // Performs a POST request
-    std::string PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const;
-
-    // Performs an asynchronous GET request
-    std::future<std::string> PerformAsyncGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers);
-
-    // Performs an asynchronous POST request
-    std::future<std::string> PerformAsyncPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields);
+    std::pair<std::string, long> PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const;
 
     // Cleanup the CURL's object
     void Cleanup();

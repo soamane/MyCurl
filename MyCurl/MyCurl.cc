@@ -44,7 +44,7 @@ const curl_slist* MyCurl::AddHeaders(const std::vector<std::string>& headers) co
     return headerList;
 }
 
-std::string MyCurl::PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const {
+std::pair<std::string, long> MyCurl::PerformGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers) const {
     if (!this->m_curl) {
         throw std::runtime_error("CURL handle is not initialized");
     }
@@ -55,6 +55,8 @@ std::string MyCurl::PerformGetRequest(const ProtocolType& protocol, std::string_
     }
 
     std::string response;
+    long response_code = 0; 
+
     curl_easy_setopt(curl, CURLOPT_URL, url.data());
 
     if (headers) {
@@ -68,12 +70,17 @@ std::string MyCurl::PerformGetRequest(const ProtocolType& protocol, std::string_
     if (res != CURLE_OK) {
         response = "Failed to perform GET request: " + std::string(curl_easy_strerror(res));
     }
+    else {
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    }
 
     curl_easy_cleanup(curl);
-    return response;
+
+    return std::make_pair(response, response_code);
 }
 
-std::string MyCurl::PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const {
+
+std::pair<std::string, long> MyCurl::PerformPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields) const {
     if (!this->m_curl) {
         throw std::runtime_error("CURL handle is not initialized");
     }
@@ -88,7 +95,10 @@ std::string MyCurl::PerformPostRequest(const ProtocolType& protocol, std::string
     }
 
     std::string response;
+    long response_code = 0; 
+
     curl_easy_setopt(curl, CURLOPT_URL, url.data());
+
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postfields.data());
 
@@ -103,19 +113,13 @@ std::string MyCurl::PerformPostRequest(const ProtocolType& protocol, std::string
     if (res != CURLE_OK) {
         response = "Failed to perform POST request: " + std::string(curl_easy_strerror(res));
     }
+    else {
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    }
 
     curl_easy_cleanup(curl);
-    return response;
-}
 
-std::future<std::string> MyCurl::PerformAsyncGetRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers)
-{
-    return std::async(std::launch::async, &MyCurl::PerformGetRequest, this, protocol, url, headers);
-}
-
-std::future<std::string> MyCurl::PerformAsyncPostRequest(const ProtocolType& protocol, std::string_view url, const curl_slist* headers, std::string_view postfields)
-{
-    return std::async(std::launch::async, &MyCurl::PerformPostRequest, this, protocol, url, headers, postfields);
+    return std::make_pair(response, response_code);
 }
 
 void MyCurl::Cleanup() {
